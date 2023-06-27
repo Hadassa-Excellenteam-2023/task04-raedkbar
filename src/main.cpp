@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <limits>
 
+const std::string DATA_FILE = "/path/to/data.txt";  // file in resources
 
 /**
  * @brief Check if a line representing a city has a valid format.
@@ -16,7 +17,7 @@
  * @return True if the line is a valid city format, false otherwise.
  */
 bool isValidCityLine(const std::string& line) {
-    std::regex cityRegex(R"(^[a-zA-Z\s]+,\s[a-zA-Z]{2}$)");
+    std::regex cityRegex(R"(^[a-zA-Z'\.\s\-(),]+(,\s[a-zA-Z]{2})?$)");
     return std::regex_match(line, cityRegex);
 }
 
@@ -56,6 +57,7 @@ void readFile(const std::string& filename, ProximityCitySearch& citySearch) {
 
         if (lineCount % 2 == 1) {
             if (!isValidCityLine(line)) {
+                std::cout << line;
                 throw std::runtime_error("Invalid city name format");
             }
 
@@ -87,6 +89,10 @@ std::string getSelectedCityName() {
     std::string selectedCityName;
     std::cout << "Please enter the selected city name (with a line break after it):\n";
     std::getline(std::cin, selectedCityName);
+
+    if (selectedCityName == "0") {
+        return "0";
+    }
 
     while (!isValidCityLine(selectedCityName)) {
         std::cout << "Invalid city name. Please enter the selected city name (with a line break after it):\n";
@@ -149,7 +155,7 @@ int main() {
         ProximityCitySearch citySearch;
 
         // Change the path to the appropriate one
-        readFile("/path/to/data.txt", citySearch);
+        readFile(DATA_FILE, citySearch);
 
         while (true) {
             std::string selectedCityName = getSelectedCityName();
